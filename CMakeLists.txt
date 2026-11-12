@@ -92,7 +92,9 @@ set_target_properties(dkbom PROPERTIES WIN32_EXECUTABLE TRUE)
 
 if(WIN32)
   # The icon Explorer shows, which is the resource file's, not the window's.
-  file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/packaging/dkbom.ico" DKBOM_ICON)
+  # rc.exe reads "\a" in a quoted path as its escape for bell, which is what a
+  # native Windows path starts with on a runner; forward slashes it cannot.
+  file(TO_CMAKE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/packaging/dkbom.ico" DKBOM_ICON)
   configure_file(packaging/dkbom.rc.in ${CMAKE_CURRENT_BINARY_DIR}/dkbom.rc @ONLY)
   target_sources(dkbom PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/dkbom.rc)
 endif()

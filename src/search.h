@@ -63,7 +63,7 @@ public:
 	Q_INVOKABLE void search();
 
 	/* The toolbar's button: keywords across the whole catalogue. The category
-	 * and its ticks belong to the rail's Apply, so a fresh start means both go. */
+	 * and its ticks belong to the panel's Apply, so a fresh start means both go. */
 	Q_INVOKABLE void searchKeywords();
 	Q_INVOKABLE void nextPage();
 	Q_INVOKABLE void selectCategory(const QString &id);

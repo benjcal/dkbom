@@ -16,7 +16,7 @@ ApplicationWindow {
 	readonly property color accent: Format.accent
 
 	function searchAllProducts() {
-		rail.reset();
+		filterPanel.reset();
 		Search.searchKeywords();
 	}
 
@@ -85,7 +85,7 @@ ApplicationWindow {
 			}
 
 			/* Keywords across the whole catalogue: it drops the category and its
-			 * ticks, because applying those is the rail's Apply button. */
+			 * ticks, because applying those is the filter panel's Apply button. */
 			Button {
 				Layout.preferredWidth: 90
 				text: "Search"
@@ -104,7 +104,7 @@ ApplicationWindow {
 				display: AbstractButton.TextBesideIcon
 				enabled: !Search.busy
 				onClicked: {
-					rail.reset();
+					filterPanel.reset();
 					Search.reset();
 				}
 			}
@@ -376,14 +376,14 @@ ApplicationWindow {
 			}
 		}
 
-		FilterRail {
-			id: rail
+		FilterPanel {
+			id: filterPanel
 			SplitView.minimumWidth: 220
 			SplitView.maximumWidth: 640
-			SplitView.preferredWidth: Prefs.railWidth
+			SplitView.preferredWidth: Prefs.filterPanelWidth
 			SplitView.fillHeight: true
 
-			onWidthChanged: railSaveTimer.restart()
+			onWidthChanged: panelSaveTimer.restart()
 		}
 
 		ResultsView {
@@ -392,7 +392,7 @@ ApplicationWindow {
 			onNotify: (message) => root.showToast(message)
 		}
 
-		/* The BOM is a queue on the other side of the results: the filter rail
+		/* The BOM is a queue on the other side of the results: the filter panel
 		 * narrows what is browsable, this is the list being filled. */
 		BomView {
 			id: bom
@@ -413,9 +413,9 @@ ApplicationWindow {
 	}
 
 	Timer {
-		id: railSaveTimer
+		id: panelSaveTimer
 		interval: 400
-		onTriggered: Prefs.setRailWidth(Math.round(rail.width))
+		onTriggered: Prefs.setFilterPanelWidth(Math.round(filterPanel.width))
 	}
 
 	/* Copying and opening are the two actions that leave no trace in the window,

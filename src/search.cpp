@@ -83,7 +83,7 @@ const int kMaxSuggestions = 20;
 const int kPageSize = 50;
 const int kAutoPageLimit = 4;
 
-/* A filter the rail has ticks in is the one being worked on, so it outranks the
+/* A filter the panel has ticks in is the one being worked on, so it outranks the
  * ones that are merely available. */
 int tickedCount(const QVariant &filter)
 {
@@ -253,7 +253,7 @@ void Search::selectCategory(const QString &id)
 	search();
 }
 
-/* Back to a blank slate: no keyword, no category, no ticks, no rows. The rail
+/* Back to a blank slate: no keyword, no category, no ticks, no rows. The panel
  * goes with it because the filters belong to a category. */
 void Search::reset()
 {
@@ -288,7 +288,7 @@ void Search::search()
 	fetchPage(0);
 }
 
-/* Ticks are the rail's business: this drops the category and every tick with it
+/* Ticks are the panel's business: this drops the category and every tick with it
  * and asks the catalogue about the keyword alone. Two buttons, two jobs. */
 void Search::searchKeywords()
 {
@@ -377,7 +377,7 @@ void Search::fetchPage(int offset)
 		    kSearchTtl);
 }
 
-/* The category the rail's parameter ids belong to. If the user picked one, that
+/* The category the panel's parameter ids belong to. If the user picked one, that
  * is the answer; a keyword-only search falls back to what the response said. */
 QString Search::filterCategoryId() const
 {
@@ -622,7 +622,7 @@ void Search::toggleFilter(int parameterId, const QString &valueId)
 		m_selected.insert(parameterId, values);
 
 	/* Selecting a filter is local. Nothing is asked of Digi-Key until the user
-	 * sends the request, so the rail restates the ticks it already has and
+	 * sends the request, so the panel restates the ticks it already has and
 	 * repaints without waiting for a response. */
 	for (QVariant &filter : m_filters) {
 		QVariantMap map = filter.toMap();

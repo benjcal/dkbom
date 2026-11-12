@@ -6,11 +6,11 @@ import "Format.js" as Format
 import "Phosphor.js" as Phosphor
 
 Rectangle {
-	id: rail
-	color: Format.railBg
+	id: panel
+	color: Format.panelBg
 
 	/* Per-block state: which panels are unrolled, and what has been typed into
-	 * each panel's own narrow field. Keyed by parameter id, because the rail is
+	 * each panel's own narrow field. Keyed by parameter id, because the panel is
 	 * rebuilt from every response and the ids are the only stable handle. */
 	property var expanded: ({})
 	property var expandedCategories: ({})
@@ -201,8 +201,8 @@ Rectangle {
 			placeholderText: "filter categories"
 			font.pixelSize: 12
 			selectByMouse: true
-			text: rail.categoryQuery
-			onTextEdited: rail.categoryQuery = text
+			text: panel.categoryQuery
+			onTextEdited: panel.categoryQuery = text
 		}
 
 		Item {
@@ -213,7 +213,7 @@ Rectangle {
 				id: categoryList
 				anchors.fill: parent
 				clip: true
-				model: rail.visibleCategories()
+				model: panel.visibleCategories()
 				ScrollBar.vertical: ScrollBar {}
 
 				delegate: Item {
@@ -224,8 +224,8 @@ Rectangle {
 
 					readonly property bool current: Search.categoryId === modelData.id
 					readonly property bool hovered: categoryHover.containsMouse
-					readonly property bool kids: rail.hasChildren(modelData.id)
-					readonly property bool unfolded: rail.isCategoryOpen(modelData.id)
+					readonly property bool kids: panel.hasChildren(modelData.id)
+					readonly property bool unfolded: panel.isCategoryOpen(modelData.id)
 
 					Rectangle {
 						anchors.fill: parent
@@ -270,7 +270,7 @@ Rectangle {
 						anchors.leftMargin: 8 + categoryRow.modelData.depth * 12
 						anchors.verticalCenter: parent.verticalCenter
 						width: 12
-						visible: categoryRow.kids && rail.categoryQuery.trim() === ""
+						visible: categoryRow.kids && panel.categoryQuery.trim() === ""
 						glyph: categoryRow.unfolded
 						       ? Phosphor.caretDown : Phosphor.caretRight
 						size: 9
@@ -279,7 +279,7 @@ Rectangle {
 						MouseArea {
 							anchors.fill: parent
 							cursorShape: Qt.PointingHandCursor
-							onClicked: rail.toggleCategory(categoryRow.modelData.id)
+							onClicked: panel.toggleCategory(categoryRow.modelData.id)
 						}
 					}
 				}
@@ -328,8 +328,8 @@ Rectangle {
 			enabled: Search.filters.length > 0
 			font.pixelSize: 12
 			selectByMouse: true
-			onTextEdited: rail.refreshCompletion()
-			onAccepted: if (rail.hits.length > 0) rail.chooseSuggestion(rail.hits[0])
+			onTextEdited: panel.refreshCompletion()
+			onAccepted: if (panel.hits.length > 0) panel.chooseSuggestion(panel.hits[0])
 		}
 
 		Popup {
@@ -338,7 +338,7 @@ Rectangle {
 			x: 0
 			y: completionField.height + 2
 			width: Math.max(completionField.width,
-					Math.min(rail.suggestionWidth, rail.width - 16))
+					Math.min(panel.suggestionWidth, panel.width - 16))
 			padding: 0
 			closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
 
@@ -351,7 +351,7 @@ Rectangle {
 			contentItem: ListView {
 				implicitHeight: Math.min(contentHeight, 264)
 				clip: true
-				model: rail.hits
+				model: panel.hits
 				ScrollBar.vertical: ScrollBar {}
 
 				delegate: Item {
@@ -408,7 +408,7 @@ Rectangle {
 						id: suggestionHover
 						anchors.fill: parent
 						hoverEnabled: true
-						onClicked: rail.chooseSuggestion(suggestionRow.modelData)
+						onClicked: panel.chooseSuggestion(suggestionRow.modelData)
 					}
 				}
 			}
@@ -446,7 +446,7 @@ Rectangle {
 				elide: Text.ElideRight
 			}
 
-			/* The rail only ticks; this is the step that sends the request, so it
+			/* The panel only ticks; this is the step that sends the request, so it
 			 * sits with the filters. */
 			Button {
 				id: applyFiltersButton
@@ -495,8 +495,8 @@ Rectangle {
 				id: parameterBlock
 				required property var modelData
 
-				readonly property var shown: rail.valuesFor(modelData)
-				readonly property string query: rail.queryFor(modelData.parameterId)
+				readonly property var shown: panel.valuesFor(modelData)
+				readonly property string query: panel.queryFor(modelData.parameterId)
 				readonly property bool narrowable: modelData.values.length > 8
 				readonly property bool hiddenBlock: shown.length === 0
 								   && query === ""
@@ -558,9 +558,9 @@ Rectangle {
 							leftPadding: 6
 							rightPadding: 6
 							selectByMouse: true
-							text: rail.queryFor(parameterBlock.modelData.parameterId)
-							      ? rail.queries[parameterBlock.modelData.parameterId] : ""
-							onTextEdited: rail.setQuery(parameterBlock.modelData.parameterId,
+							text: panel.queryFor(parameterBlock.modelData.parameterId)
+							      ? panel.queries[parameterBlock.modelData.parameterId] : ""
+							onTextEdited: panel.setQuery(parameterBlock.modelData.parameterId,
 										    text)
 						}
 					}
@@ -646,7 +646,7 @@ Rectangle {
 							anchors.left: parent.left
 							anchors.leftMargin: 12
 							anchors.verticalCenter: parent.verticalCenter
-							text: rail.isExpanded(parameterBlock.modelData.parameterId)
+							text: panel.isExpanded(parameterBlock.modelData.parameterId)
 							      ? "less"
 							      : "+" + (parameterBlock.modelData.values.length - 8) + " more"
 							font.pixelSize: 11
@@ -655,7 +655,7 @@ Rectangle {
 
 						MouseArea {
 							anchors.fill: parent
-							onClicked: rail.toggleExpanded(parameterBlock.modelData.parameterId)
+							onClicked: panel.toggleExpanded(parameterBlock.modelData.parameterId)
 						}
 					}
 				}

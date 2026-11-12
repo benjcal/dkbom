@@ -13,7 +13,7 @@ import "Phosphor.js" as Phosphor
  * until "show assigned" is ticked. */
 Rectangle {
 	id: view
-	color: Format.railBg
+	color: Format.panelBg
 
 	signal notify(string message)
 

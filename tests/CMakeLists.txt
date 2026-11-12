@@ -1,6 +1,8 @@
 # Test the reader, the writer and the model directly. The integration tests
 # drive a real copy of the project through kicad-cli, and skip when it is absent.
 
+find_package(Qt6 6.5 REQUIRED COMPONENTS Test)
+
 add_executable(tst_bom tst_bom.cpp)
 
 target_link_libraries(tst_bom PRIVATE dkbom_core Qt6::Test)

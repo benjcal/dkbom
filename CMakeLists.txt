@@ -6,7 +6,7 @@ include(GNUInstallDirs)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Quick QuickControls2 QuickDialogs2 Network Svg Test)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Quick QuickControls2 QuickDialogs2 Network Svg)
 qt_standard_project_setup()
 
 qt_policy(SET QTP0001 NEW)
@@ -66,7 +66,7 @@ qt_add_qml_module(dkbom
   VERSION 1.0
   QML_FILES
     qml/Main.qml
-    qml/FilterRail.qml
+    qml/FilterPanel.qml
     qml/ResultsView.qml
     qml/BomView.qml
     qml/PhotoPeek.qml
@@ -94,5 +94,7 @@ configure_file(cmake/uninstall.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninst
 add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 
-enable_testing()
-add_subdirectory(tests)
+include(CTest)
+if(BUILD_TESTING)
+  add_subdirectory(tests)
+endif()

@@ -1,10 +1,10 @@
 .pragma library
 
 /* One palette for the whole tool. Partitions have to be told apart at a glance:
- * chrome, rail, table head, rows, and the things that are ticked or stale. */
+ * chrome, panels, table head, rows, and the things that are ticked or stale. */
 var appBg = "#e9edf2"
 var surface = "#ffffff"
-var railBg = "#f5f8fb"
+var panelBg = "#f5f8fb"
 var sectionBg = "#d9e2ec"
 var sectionText = "#2b3947"
 var blockBg = "#eaf0f6"

@@ -332,7 +332,7 @@ Rectangle {
 
 		Rectangle {
 			Layout.fillWidth: true
-			color: Format.railBg
+			color: Format.panelBg
 			Layout.preferredHeight: scope.implicitHeight + 10
 
 			Flow {

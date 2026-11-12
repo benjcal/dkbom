@@ -12,6 +12,9 @@ build:
 run: build
 	@set -a; [ ! -f .env ] || . ./.env; set +a; ./$(BUILD)/dkbom
 
+test: build
+	ctest --test-dir $(BUILD) --output-on-failure
+
 install:
 	cmake --install $(BUILD) --prefix $(PREFIX)
 
@@ -21,4 +24,4 @@ uninstall:
 clean:
 	rm -rf $(BUILD)
 
-.PHONY: build run install uninstall clean
+.PHONY: build run test install uninstall clean

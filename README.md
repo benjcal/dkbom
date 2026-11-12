@@ -15,14 +15,6 @@ one request.
 
 ![dkbom](screenshots/main.png)
 
-## Filter values by typing
-
-Pick a category, then type the values you care about: `4.7k`, `0.1%`, `0603`,
-`25ppm`, `1/10`. The box matches every filter in that category and labels each
-hit with the filter it belongs to, so you can pick the right one when several
-filters contain similar text. Each pick is staged; the Apply button counts them,
-and the whole set goes to Digi-Key in one request.
-
 ![Filter autocomplete](screenshots/filter-autocomplete.gif)
 
 ## What it does
@@ -41,38 +33,39 @@ and the whole set goes to Digi-Key in one request.
 ## Requirements
 
 - Linux. The code is portable Qt, but the packaging here targets Linux.
-- Qt 6.5 or newer: Quick, QuickControls2, QuickDialogs2, Network, Svg, Test.
+- Qt 6.5 or newer: Quick, QuickControls2, QuickDialogs2, Network, Svg.
+- Qt Test, for the test suite.
 - CMake 3.21+, Ninja, and a C++20 compiler.
 - KiCad 10 with `kicad-cli` on `PATH` to open a project.
-- A Digi-Key API app with Product Information V4 access. Create one at
-  [developer.digikey.com](https://developer.digikey.com/).
+- A Digi-Key API app with Product Information V4 (product search) access.
 
-## Build and run
+## Getting started
 
 ```bash
+git clone https://github.com/benjcal/dkbom.git
+cd dkbom
 make
-make run
+sudo make install PREFIX=/usr/local
 ```
 
-The same thing with CMake directly:
+`PREFIX` defaults to `/usr/local`; use `PREFIX=$HOME/.local` for a user install.
 
-```bash
-cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
-cmake --build build
-./build/dkbom
-```
+Start it with `dkbom`, or open **dkbom** from your application menu. With the
+user-local install, the binary is `~/.local/bin/dkbom`.
 
-Install and uninstall:
+### Digi-Key API access
 
-```bash
-make install PREFIX=$HOME/.local
-make uninstall
-```
+Create an app at [developer.digikey.com](https://developer.digikey.com/) with
+**Product Information V4** access.
 
-## Digi-Key credentials
+Open **Settings** (the gear icon) and paste the client ID and secret. They are
+stored in `~/.config/dkbom/config.conf` as plain text on your machine.
 
-The app reads `DIGIKEY_CLIENT_ID` and `DIGIKEY_CLIENT_SECRET` from the
-environment. `make run` sources `.env` first, so development works like this:
+![Digi-Key API access](screenshots/settings.png)
+
+### Development
+
+`make run` builds and starts the app. It sources `.env` when the file exists:
 
 ```bash
 cp .env.example .env
@@ -80,18 +73,21 @@ $EDITOR .env
 make run
 ```
 
-`.env` is gitignored. Keep it that way, and keep real credentials out of the
-repository.
+Saved settings take priority over the environment.
 
-You can also paste the client ID and secret into the Settings dialog. They are
-stored in `~/.config/dkbom/config.conf` as plain text, on your machine. Saved
-settings take priority over the environment.
+To remove the installed files:
+
+```bash
+make uninstall
+```
+
+Use `sudo make uninstall` when the files were installed under `/usr/local`.
 
 ## Using it
 
 1. Press **Open project** and pick a `.kicad_pro`, the root `.kicad_sch`, or the
    project folder.
-2. Search for a part, pick a category, or tick filters in the rail. Press
+2. Search for a part, pick a category, or tick filters in the filter panel. Press
    **Apply** to send the filters.
 3. Select a BOM line on the right, pick a part in the results, and press
    **Assign**. The number is staged; the schematic stays untouched.
@@ -101,11 +97,21 @@ settings take priority over the environment.
 
 ![BOM and results](screenshots/bom.png)
 
+## Options and columns
+
+The **Options** popup sets the quantity used for pricing, the minimum stock, the
+maximum MOQ, and whether marketplace parts are included.
+
+![Options](screenshots/options.png)
+
+The **Columns** popup chooses which columns the results table shows.
+
+![Columns](screenshots/columns.png)
+
 ## Tests
 
 ```bash
-make build
-ctest --test-dir build --output-on-failure
+make test
 ```
 
 The unit tests cover the schematic reader and writer, the CSV parser, the BOM

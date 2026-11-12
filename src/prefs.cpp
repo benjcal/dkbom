@@ -53,18 +53,18 @@ bool Prefs::hasCredentials() const
 	return !clientId().isEmpty() && !clientSecret().isEmpty();
 }
 
-int Prefs::railWidth() const
+int Prefs::filterPanelWidth() const
 {
-	return m_settings.value(QStringLiteral("window/railWidth"), 340).toInt();
+	return m_settings.value(QStringLiteral("window/filterPanelWidth"), 340).toInt();
 }
 
-void Prefs::setRailWidth(int width)
+void Prefs::setFilterPanelWidth(int width)
 {
 	const int clamped = qBound(160, width, 1200);
-	if (m_settings.value(QStringLiteral("window/railWidth"), 340).toInt() == clamped)
+	if (m_settings.value(QStringLiteral("window/filterPanelWidth"), 340).toInt() == clamped)
 		return;
 
-	m_settings.setValue(QStringLiteral("window/railWidth"), clamped);
+	m_settings.setValue(QStringLiteral("window/filterPanelWidth"), clamped);
 	emit changed();
 }
 

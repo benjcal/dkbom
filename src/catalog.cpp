@@ -78,7 +78,7 @@ void Catalog::flatten(const QJsonArray &nodes, int depth, const QString &parentI
 		entry.insert(QStringLiteral("count"),
 			     node.value(QStringLiteral("ProductCount")).toInteger());
 		entry.insert(QStringLiteral("depth"), depth);
-		/* The parent lets the rail unfold one branch; depth alone cannot tell
+		/* The parent lets the panel unfold one branch; depth alone cannot tell
 		 * siblings apart. */
 		entry.insert(QStringLiteral("parent"), parentId);
 		m_categories.append(entry);

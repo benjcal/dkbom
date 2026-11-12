@@ -13,7 +13,7 @@ class Prefs : public QObject {
 	Q_OBJECT
 	Q_PROPERTY(QVariantMap columnWidths READ columnWidths NOTIFY changed)
 	Q_PROPERTY(QStringList hiddenColumns READ hiddenColumns NOTIFY changed)
-	Q_PROPERTY(int railWidth READ railWidth NOTIFY changed)
+	Q_PROPERTY(int filterPanelWidth READ filterPanelWidth NOTIFY changed)
 	Q_PROPERTY(int bomWidth READ bomWidth NOTIFY changed)
 	Q_PROPERTY(int assemblies READ assemblies NOTIFY assembliesChanged)
 	Q_PROPERTY(QStringList recentProjects READ recentProjects NOTIFY recentChanged)
@@ -28,9 +28,9 @@ public:
 	QVariantMap columnWidths() const;
 	QStringList hiddenColumns() const;
 
-	/* The filter rail is dragged, so its width is a window setting. The BOM dock
+	/* The filter panel is dragged, so its width is a window setting. The BOM dock
 	 * is the same kind of thing on the other side. */
-	int railWidth() const;
+	int filterPanelWidth() const;
 	int bomWidth() const;
 
 	/* How many boards the BOM is being priced for. It belongs to the window: the
@@ -54,7 +54,7 @@ public:
 
 	Q_INVOKABLE void setColumnWidth(const QString &key, int width);
 	Q_INVOKABLE void setColumnHidden(const QString &key, bool hidden);
-	Q_INVOKABLE void setRailWidth(int width);
+	Q_INVOKABLE void setFilterPanelWidth(int width);
 	Q_INVOKABLE void setBomWidth(int width);
 	Q_INVOKABLE void setAssemblies(int assemblies);
 	Q_INVOKABLE void addRecentProject(const QString &path);

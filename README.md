@@ -85,14 +85,15 @@ with the filter box.
 ### Assign to KiCad
 
 Opening a project is optional; browsing and copying work on their own. With a
-project open, the BOM pane assigns the selected part to its symbol.
+project open, dkbom adds or updates a `DigiKey #` property on the symbol and
+sets its value to the selected part number.
 
 1. Press **Open project** and pick a `.kicad_pro`, the root `.kicad_sch`, or the
    project folder.
 2. Select a BOM line on the right, pick a part in the results, and press
    **Assign**. The number is staged; the schematic stays untouched.
-3. Press **Save** to write the Digi-Key number into every symbol on that line.
-   **Undo** restores the bytes from before the write.
+3. Press **Save** to write the property into every symbol on that line.
+   **Undo** restores the previous values.
 4. Press **Reload** after KiCad changes the project on disk.
 
 ![BOM and results](screenshots/bom.png)

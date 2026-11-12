@@ -1,4 +1,4 @@
-# dkbom
+# <img src="assets/icons/dkbom.svg" width="32" alt=""> dkbom
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Qt 6](https://img.shields.io/badge/Qt-6.5%2B-41cd52)](https://www.qt.io/)

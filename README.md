@@ -3,17 +3,33 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Qt 6](https://img.shields.io/badge/Qt-6.5%2B-41cd52)](https://www.qt.io/)
 
-dkbom searches the Digi-Key catalogue and writes the result into a KiCad
-schematic. It reads the BOM with `kicad-cli`, filters by what the part actually
-is, and stages each pick until you press Save.
+dkbom is a desktop catalogue browser for Digi-Key. It integrates with KiCad to
+assign parts to schematic symbols, keeping the catalogue and the project BOM
+side by side.
+
+Narrowing a category takes a few keystrokes. Pick a category, then type values
+into a single box: `4.7k`, `0.1%`, `0603`, `25ppm`, `1/10`. The box matches every
+filter in that category while you type, labels each hit with its filter, and
+stages each pick locally. Press Apply once and the whole set goes to Digi-Key in
+one request.
 
 ![dkbom](screenshots/main.png)
 
+## Filter values by typing
+
+Pick a category, then type the values you care about: `4.7k`, `0.1%`, `0603`,
+`25ppm`, `1/10`. The box matches every filter in that category and labels each
+hit with the filter it belongs to, so you can pick the right one when several
+filters contain similar text. Each pick is staged; the Apply button counts them,
+and the whole set goes to Digi-Key in one request.
+
+![Filter autocomplete](screenshots/filter-autocomplete.gif)
+
 ## What it does
 
-- Search the Digi-Key catalogue by keyword or category.
-- Narrow results with parametric filters: resistance, package, tolerance, stock,
-  MOQ, and the rest of the payload Digi-Key returns.
+- Browse the Digi-Key catalogue by category or keyword.
+- Narrow a category with one filter box: type `4.7k`, `0.1%`, `0603`, `25ppm`,
+  `1/10`, and pick from every matching filter at once.
 - See stock, price breaks, MOQ, photos, and datasheet links for each part.
 - Open a KiCad project and read its BOM through `kicad-cli`.
 - Assign a Digi-Key number to a BOM line, then write it into every matching

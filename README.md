@@ -61,9 +61,9 @@ sudo make uninstall
 ### Windows
 
 The workflow in `.github/workflows/build.yml` builds a portable folder: the exe
-with the Qt runtime beside it. Download the zip artifact from a run of that
-workflow and unpack it anywhere; `dkbom.exe` starts from there, with no
-installer and nothing written outside your user profile.
+with the Qt runtime beside it, zipped and attached to the GitHub release. Unpack
+it anywhere; `dkbom.exe` starts from there, with no installer and nothing
+written outside your user profile.
 
 To build it yourself, with Qt 6.5+ and Visual Studio 2022 in the environment:
 

@@ -1,9 +1,11 @@
-name: build
+name: release
 
 on:
-  push:
-  pull_request:
-  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
 
 jobs:
   windows:
@@ -38,7 +40,7 @@ jobs:
       - name: Zip
         run: Compress-Archive -Path stage/bin/* -DestinationPath dkbom-${{ github.ref_name }}-windows-x64.zip
 
-      - uses: actions/upload-artifact@v4
+      - name: Attach to the release
+        uses: softprops/action-gh-release@v2
         with:
-          name: dkbom-windows-x64
-          path: dkbom-*-windows-x64.zip
+          files: dkbom-${{ github.ref_name }}-windows-x64.zip

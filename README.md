@@ -15,8 +15,6 @@ one request.
 
 ![dkbom](screenshots/main.png)
 
-![Filter autocomplete](screenshots/filter-autocomplete.gif)
-
 ## What it does
 
 - Browse the Digi-Key catalogue by category or keyword.
@@ -39,65 +37,67 @@ one request.
 - KiCad 10 with `kicad-cli` on `PATH` to open a project.
 - A Digi-Key API app with Product Information V4 (product search) access.
 
-## Getting started
+## Install
 
 ```bash
 git clone https://github.com/benjcal/dkbom.git
 cd dkbom
 make
-sudo make install PREFIX=/usr/local
+sudo make install
 ```
 
-`PREFIX` defaults to `/usr/local`; use `PREFIX=$HOME/.local` for a user install.
+Start it with `dkbom`, or open **dkbom** from your application menu.
 
-Start it with `dkbom`, or open **dkbom** from your application menu. With the
-user-local install, the binary is `~/.local/bin/dkbom`.
+To remove the installed files:
 
-### Digi-Key API access
+```bash
+sudo make uninstall
+```
+
+## Using it
+
+### Digi-Key API key
 
 Create an app at [developer.digikey.com](https://developer.digikey.com/) with
 **Product Information V4** access.
 
 Open **Settings** (the gear icon) and paste the client ID and secret. They are
-stored in `~/.config/dkbom/config.conf` as plain text on your machine.
+stored in `~/.config/dkbom/config.conf` as plain text on your machine. Saved
+settings take priority over the environment.
 
 ![Digi-Key API access](screenshots/settings.png)
 
-### Development
+### Browse and copy
 
-`make run` builds and starts the app. It sources `.env` when the file exists:
+The catalogue works without a KiCad project. Pick a category, then narrow it
+with the filter box.
 
-```bash
-cp .env.example .env
-$EDITOR .env
-make run
-```
+1. Pick a category in the filter panel.
+2. Click **find any filter value** and type a value such as `4.7k`, `0.1%`,
+   `0603`, `25ppm`, or `1/10`. Pick the matching filter from the list.
+3. Repeat for the rest of the values. Each pick is staged; the Apply button
+   counts them.
+4. Press **Apply** to send the whole set to Digi-Key.
+5. Hover a row to copy the MPN or Digi-Key number, or open the datasheet.
 
-Saved settings take priority over the environment.
+![Filter autocomplete](screenshots/filter-autocomplete.gif)
 
-To remove the installed files:
+### Assign to KiCad
 
-```bash
-make uninstall
-```
-
-Use `sudo make uninstall` when the files were installed under `/usr/local`.
-
-## Using it
+Opening a project is optional; browsing and copying work on their own. With a
+project open, the BOM pane assigns the selected part to its symbol.
 
 1. Press **Open project** and pick a `.kicad_pro`, the root `.kicad_sch`, or the
    project folder.
-2. Search for a part, pick a category, or tick filters in the filter panel. Press
-   **Apply** to send the filters.
-3. Select a BOM line on the right, pick a part in the results, and press
+2. Select a BOM line on the right, pick a part in the results, and press
    **Assign**. The number is staged; the schematic stays untouched.
-4. Press **Save** to write the Digi-Key number into every symbol on that line.
+3. Press **Save** to write the Digi-Key number into every symbol on that line.
    **Undo** restores the bytes from before the write.
-5. Press **Reload** after KiCad changes the project on disk.
+4. Press **Reload** after KiCad changes the project on disk.
 
 ![BOM and results](screenshots/bom.png)
 
-## Options and columns
+### Options and columns
 
 The **Options** popup sets the quantity used for pricing, the minimum stock, the
 maximum MOQ, and whether marketplace parts are included.
@@ -107,6 +107,16 @@ maximum MOQ, and whether marketplace parts are included.
 The **Columns** popup chooses which columns the results table shows.
 
 ![Columns](screenshots/columns.png)
+
+## Development
+
+`make run` builds and starts the app. It sources `.env` when the file exists:
+
+```bash
+cp .env.example .env
+$EDITOR .env
+make run
+```
 
 ## Tests
 
@@ -125,8 +135,6 @@ missing.
   busy session can still spend it.
 - Search and pricing use the US site and USD.
 - Schematic writes are tested with KiCad 10.
-- Credentials live in a plain-text config file. This is a bench tool, and that
-  is the trade-off.
 - Linux packaging only: a `.desktop` file and an icon. There is no Flatpak,
   AppImage, Windows, or macOS package yet.
 

@@ -1,5 +1,4 @@
 BUILD := build
-# PREFIX ?= $(HOME)/.local
 PREFIX ?= /usr/local
 
 BUILD_TYPE ?= Release

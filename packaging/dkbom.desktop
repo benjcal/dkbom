@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=dkbom
+GenericName=Digi-Key BOM Tool
+Comment=Browse the Digi-Key catalogue and assign parts to a KiCad BOM
+Exec=dkbom
+Icon=dkbom
+Terminal=false
+Categories=Science;Electronics;
+Keywords=DigiKey;KiCad;BOM;parts;electronics;
+StartupNotify=true
+StartupWMClass=dkbom

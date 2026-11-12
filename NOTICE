@@ -1,0 +1,21 @@
+dkbom
+Copyright (c) 2026 dkbom contributors
+
+Qt 6
+----
+This program uses Qt 6, available under the GNU Lesser General Public License
+version 3, the GNU General Public License version 3, or a commercial license.
+See https://www.qt.io/licensing/ for the terms that apply to your build.
+
+Icons
+-----
+Phosphor Icons
+Copyright (c) 2023 Phosphor Icons (SVG icons)
+Copyright (c) 2020-2021 Phosphor Icons (icon font)
+Licensed under the MIT License. The full text is in assets/LICENSE-Phosphor.
+https://phosphoricons.com/
+
+Trademarks
+----------
+Digi-Key is a trademark of Digi-Key Electronics. KiCad is a trademark of the
+KiCad project. This project is not affiliated with or endorsed by either.

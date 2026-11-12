@@ -30,14 +30,18 @@ one request.
 
 ## Requirements
 
-- Linux. The code is portable Qt, but the packaging here targets Linux.
+- Linux or Windows. The code is portable Qt; the packaging here targets those
+  two, and nothing has been tried on macOS.
 - Qt 6.5 or newer: Quick, QuickControls2, QuickDialogs2, Network, Svg.
 - Qt Test, for the test suite.
-- CMake 3.21+, Ninja, and a C++20 compiler.
-- KiCad 10 with `kicad-cli` on `PATH` to open a project.
+- CMake 3.21+, Ninja, and a C++20 compiler (MSVC 2022 on Windows).
+- KiCad 10 with `kicad-cli` on `PATH` to open a project. On Windows the
+  installer's `bin` folder is not on `PATH`; set `KICAD_CLI` to it instead.
 - A Digi-Key API app with Product Information V4 (product search) access.
 
 ## Install
+
+### Linux
 
 ```bash
 git clone https://github.com/benjcal/dkbom.git
@@ -54,6 +58,22 @@ To remove the installed files:
 sudo make uninstall
 ```
 
+### Windows
+
+The workflow in `.github/workflows/build.yml` builds a portable folder: the exe
+with the Qt runtime beside it. Download the zip artifact from a run of that
+workflow and unpack it anywhere; `dkbom.exe` starts from there, with no
+installer and nothing written outside your user profile.
+
+To build it yourself, with Qt 6.5+ and Visual Studio 2022 in the environment:
+
+```powershell
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build
+cmake --install build --prefix stage
+windeployqt --qmldir qml stage/bin/dkbom.exe
+```
+
 ## Using it
 
 ### Digi-Key API key
@@ -62,8 +82,9 @@ Create an app at [developer.digikey.com](https://developer.digikey.com/) with
 **Product Information V4** access.
 
 Open **Settings** (the gear icon) and paste the client ID and secret. They are
-stored in `~/.config/dkbom/config.conf` as plain text on your machine. Saved
-settings take priority over the environment.
+stored as plain text on your machine, in `~/.config/dkbom/config.conf` on Linux
+and `%APPDATA%\dkbom\config.conf` on Windows. Saved settings take priority over
+the environment.
 
 ![Digi-Key API access](screenshots/settings.png)
 
@@ -119,6 +140,9 @@ $EDITOR .env
 make run
 ```
 
+On Windows set `DIGIKEY_CLIENT_ID` and `DIGIKEY_CLIENT_SECRET` in the environment
+instead, or paste the credentials into **Settings** once.
+
 ## Tests
 
 ```bash
@@ -135,9 +159,11 @@ missing.
 - Digi-Key's API has a daily quota. The cache and the limiter stretch it, but a
   busy session can still spend it.
 - Search and pricing use the US site and USD.
-- Schematic writes are tested with KiCad 10.
-- Linux packaging only: a `.desktop` file and an icon. There is no Flatpak,
-  AppImage, Windows, or macOS package yet.
+- Schematic writes are tested with KiCad 10, on sheets with LF and with CRLF
+  line endings.
+- No Flatpak, AppImage, MSI, or macOS package. Windows ships as a portable
+  folder, not an installer, and the exe is unsigned, so SmartScreen warns about
+  it.
 
 ## Credits
 

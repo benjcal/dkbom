@@ -1,0 +1,44 @@
+name: build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.*'
+          cache: true
+
+      - name: Configure
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Install
+        run: cmake --install build --prefix stage
+
+      # The Qt runtime is next to the exe, not inside it: the folder is what
+      # the zip ships.
+      - name: Bundle Qt
+        run: windeployqt --qmldir qml --release --no-translations stage/bin/dkbom.exe
+
+      - name: Zip
+        run: Compress-Archive -Path stage/bin/* -DestinationPath dkbom-${{ github.ref_name }}-windows-x64.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dkbom-windows-x64
+          path: dkbom-*-windows-x64.zip

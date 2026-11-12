@@ -93,6 +93,13 @@ QHash<QString, QByteArray> contents(const QStringList &files)
 	return out;
 }
 
+/* A sheet that came through a Windows editor or a git checkout with autocrlf:
+ * the same tree, every line ending in CRLF instead of LF. */
+QByteArray withCrlf(const QByteArray &text)
+{
+	return QByteArray(text).replace('\n', "\r\n");
+}
+
 } // namespace
 
 class TestBom : public QObject {
@@ -106,6 +113,8 @@ private slots:
 	void replaceKeepsEveryOtherByte();
 	void insertLandsBeforeThePins();
 	void insertIsIdempotent();
+	void scansCrlfSheet();
+	void insertMatchesSheetLineEndings();
 	void refusesUnsafeValue();
 	void parsesKicadCsv();
 	void filtersAssignedLines();
@@ -224,6 +233,50 @@ void TestBom::insertIsIdempotent()
 	QVERIFY(second.ok);
 	QCOMPARE(second.block.count("DigiKey #"), 1);
 	QVERIFY(second.block.contains("\"BBB-ND\""));
+}
+
+void TestBom::scansCrlfSheet()
+{
+	const QByteArray sheet = withCrlf(kSheet);
+	QVERIFY(sheet.contains("\r\n\t)\r\n)"));
+
+	const QVector<sch::Symbol> symbols = sch::scan(sheet);
+	QCOMPARE(symbols.size(), 1);
+	QCOMPARE(symbols.first().uuid, QByteArray("0493f97b-d466-45c5-a859-23e5326c41f5"));
+	QCOMPARE(symbols.first().ref, QStringLiteral("R27"));
+	QCOMPARE(symbols.first().value, QStringLiteral("12k 1%"));
+
+	/* Replacing a value keeps the range and the endings around it. */
+	const sch::Symbol symbol = symbols.first();
+	const QByteArray block = sheet.mid(symbol.start, symbol.end - symbol.start);
+	const sch::Edit edit = sch::setProperty(block, QStringLiteral("Value"),
+						QStringLiteral("13k"));
+	QVERIFY2(edit.ok, qPrintable(edit.error));
+	QCOMPARE(edit.block.count("\r\n"), block.count("\r\n"));
+	QVERIFY(edit.block.contains("(property \"Value\" \"13k\"\r\n"));
+}
+
+void TestBom::insertMatchesSheetLineEndings()
+{
+	const QByteArray sheet = withCrlf(kSheet);
+	const sch::Symbol symbol = sch::scan(sheet).first();
+	const QByteArray block = sheet.mid(symbol.start, symbol.end - symbol.start);
+
+	const sch::Edit edit = sch::setProperty(block, QStringLiteral("DigiKey #"),
+						QStringLiteral("RMCF0603FT12K0CT-ND"));
+	QVERIFY2(edit.ok, qPrintable(edit.error));
+
+	/* A new field follows the sheet it lands in: KiCad reads either, but a
+	 * half-converted file is a diff the user never asked for. */
+	for (int i = edit.block.indexOf('\n'); i >= 0; i = edit.block.indexOf('\n', i + 1))
+		QVERIFY2(i > 0 && edit.block.at(i - 1) == '\r',
+			 qPrintable(QByteArray("a line ends with a bare LF at byte ")
+					    + QByteArray::number(i)));
+
+	const QVector<sch::Symbol> after = sch::scan(edit.block);
+	QCOMPARE(after.size(), 1);
+	QCOMPARE(after.first().ref, QStringLiteral("R27"));
+	QCOMPARE(after.first().value, QStringLiteral("12k 1%"));
 }
 
 void TestBom::refusesUnsafeValue()

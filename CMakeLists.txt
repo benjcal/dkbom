@@ -86,9 +86,23 @@ target_link_libraries(dkbom PRIVATE
   Qt6::Svg
 )
 
+# A GUI app has no console of its own on Windows; without this the exe opens
+# one behind the window.
+set_target_properties(dkbom PROPERTIES WIN32_EXECUTABLE TRUE)
+
+if(WIN32)
+  # The icon Explorer shows, which is the resource file's, not the window's.
+  file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/packaging/dkbom.ico" DKBOM_ICON)
+  configure_file(packaging/dkbom.rc.in ${CMAKE_CURRENT_BINARY_DIR}/dkbom.rc @ONLY)
+  target_sources(dkbom PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/dkbom.rc)
+endif()
+
 install(TARGETS dkbom RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES packaging/dkbom.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
-install(FILES assets/icons/dkbom.svg DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps)
+
+if(UNIX)
+  install(FILES packaging/dkbom.desktop DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
+  install(FILES assets/icons/dkbom.svg DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps)
+endif()
 
 configure_file(cmake/uninstall.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake @ONLY)
 add_custom_target(uninstall

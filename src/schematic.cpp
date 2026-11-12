@@ -199,6 +199,11 @@ sch::Edit sch::setProperty(const QByteArray &block, const QString &name, const Q
 		return result;
 	}
 
+	/* The anchor is the '\n' of the line break above the pins. On a CRLF sheet
+	 * that would split the pair, leaving the '\r' behind. */
+	if (anchor > 0 && block.at(anchor - 1) == '\r')
+		--anchor;
+
 	/* Hidden or not, a field with no position lands on the sheet origin, so
 	 * the symbol's own position is the one to copy. */
 	QByteArray position = "0 0 0";
@@ -209,8 +214,14 @@ sch::Edit sch::setProperty(const QByteArray &block, const QString &name, const Q
 			position = block.mid(atPos + 7, close - (atPos + 7)).trimmed();
 	}
 
+	/* The inserted text follows the sheet's own endings: KiCad reads a bare LF,
+	 * but a sheet that comes back half converted is a diff nobody asked for. */
+	QByteArray added = propertyText(name, raw, position);
+	if (block.contains("\r\n"))
+		added.replace('\n', "\r\n");
+
 	QByteArray edited = block;
-	edited.insert(anchor, propertyText(name, raw, position));
+	edited.insert(anchor, added);
 	result.ok = true;
 	result.block = edited;
 	return result;

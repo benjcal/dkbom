@@ -93,10 +93,9 @@ ctest --test-dir build --output-on-failure
 ```
 
 The unit tests cover the schematic reader and writer, the CSV parser, the BOM
-model, and pricing. The integration tests drive a copy of a real project through
-`kicad-cli`. They skip when `kicad-cli` is missing or when the project at the
-compiled-in `DKBOM_HW_DIR` path is absent. Point that path at a KiCad project in
-`tests/CMakeLists.txt` to run them.
+model, and pricing. The integration tests drive the checked-in project under
+`tests/fixtures/project` through `kicad-cli`. They skip when `kicad-cli` is
+missing.
 
 ## Limits
 

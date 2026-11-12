@@ -89,6 +89,7 @@ signals:
 
 private:
 	void fetchPage(int offset);
+	bool fillVisible();
 	void parseSearch(const QJsonObject &root, int offset);
 	void rebuildFilters(const QJsonValue &parametric, const QString &fallbackCategory);
 	QJsonObject searchBody(int offset) const;
@@ -117,5 +118,6 @@ private:
 	int m_offset = 0;
 	int m_generation = 0;
 	bool m_more = false;
+	int m_autoPages = 0;
 	ResultsModel *m_results;
 };

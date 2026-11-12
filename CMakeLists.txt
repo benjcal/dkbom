@@ -49,7 +49,7 @@ qt_add_resources(dkbom "dkbom_assets"
     assets/icons/arrow-u-up-left.svg
     assets/icons/caret-down.svg
     assets/icons/caret-right.svg
-    assets/icons/columns.svg
+    assets/icons/table.svg
     assets/icons/floppy-disk.svg
     assets/icons/folder-open.svg
     assets/icons/funnel.svg

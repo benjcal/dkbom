@@ -856,7 +856,7 @@ Rectangle {
 				anchors.centerIn: parent
 				flat: true
 				font.pixelSize: 11
-				text: "load 50 more of " + Format.count(Search.totalCount)
+				text: "load more of " + Format.count(Search.totalCount)
 				onClicked: Search.nextPage()
 			}
 		}

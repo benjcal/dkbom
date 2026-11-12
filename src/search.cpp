@@ -32,8 +32,9 @@ int packagingRank(const QString &name)
 }
 
 /* The completion box matches the way a person types: case, spacing and
- * punctuation are noise, so both sides are folded to lower-case letters,
- * digits and the decimal point. The micro sign counts as a plain "u". */
+ * decorative punctuation are noise. The slash and percent stay because they
+ * carry meaning in values like 1/10W and 0.5%. The micro sign counts as a
+ * plain "u". */
 QString foldText(const QString &text)
 {
 	QString out;
@@ -43,7 +44,8 @@ QString foldText(const QString &text)
 		c = c.toLower();
 		if (c == QChar(0x00b5) || c == QChar(0x03bc))
 			out.append(QLatin1Char('u'));
-		else if (c.isLetterOrNumber() || c == QLatin1Char('.'))
+		else if (c.isLetterOrNumber() || c == QLatin1Char('.')
+			 || c == QLatin1Char('/') || c == QLatin1Char('%'))
 			out.append(c);
 	}
 
@@ -75,6 +77,11 @@ int scoreText(const QString &needle, const QString &haystack)
 }
 
 const int kMaxSuggestions = 20;
+
+/* One API page, and how many extra pages the search may pull on its own when
+ * the local MOQ filter hides most of what came back. */
+const int kPageSize = 50;
+const int kAutoPageLimit = 4;
 
 /* A filter the rail has ticks in is the one being worked on, so it outranks the
  * ones that are merely available. */
@@ -197,8 +204,10 @@ void Search::setMaxMoq(int maxMoq)
 		return;
 
 	m_maxMoq = maxMoq;
+	m_autoPages = 0;
 	m_results->setMaxMoq(maxMoq);
 	emit maxMoqChanged();
+	fillVisible();
 }
 
 void Search::setMarketplace(bool marketplace)
@@ -259,6 +268,7 @@ void Search::reset()
 	m_totalCount = 0;
 	m_offset = 0;
 	m_more = false;
+	m_autoPages = 0;
 
 	emit keywordsChanged();
 	emit filtersChanged();
@@ -273,6 +283,8 @@ void Search::search()
 		setStatus(QStringLiteral("Pick a category or type a keyword"));
 		return;
 	}
+
+	m_autoPages = 0;
 	fetchPage(0);
 }
 
@@ -305,8 +317,23 @@ void Search::searchKeywords()
 
 void Search::nextPage()
 {
-	if (m_more)
-		fetchPage(m_offset);
+	if (m_busy || !m_more)
+		return;
+
+	m_autoPages = 0;
+	fetchPage(m_offset);
+}
+
+bool Search::fillVisible()
+{
+	if (m_busy || !m_more || m_results->rowCount() >= kPageSize)
+		return false;
+	if (m_autoPages >= kAutoPageLimit)
+		return false;
+
+	++m_autoPages;
+	fetchPage(m_offset);
+	return true;
 }
 
 void Search::fetchPage(int offset)
@@ -336,6 +363,8 @@ void Search::fetchPage(int offset)
 			    }
 
 			    parseSearch(root, offset);
+			    if (fillVisible())
+				    return;
 			    setStatus(QStringLiteral("%1 matches").arg(m_totalCount));
 		    },
 		    [this, generation](const QString &problem) {
@@ -404,7 +433,7 @@ QJsonObject Search::searchBody(int offset) const
 
 	QJsonObject body;
 	body.insert(QStringLiteral("Keywords"), m_keywords.trimmed());
-	body.insert(QStringLiteral("Limit"), 50);
+	body.insert(QStringLiteral("Limit"), kPageSize);
 	body.insert(QStringLiteral("Offset"), offset);
 	body.insert(QStringLiteral("FilterOptionsRequest"), filters);
 

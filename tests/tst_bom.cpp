@@ -117,6 +117,7 @@ private slots:
 	void saveValidatesTheLineItJustHid();
 	void saveRefusesLockedSheet();
 	void undoRestoresTheOriginalBytes();
+	void closeClearsProject();
 
 private:
 	bool copyProject();
@@ -540,6 +541,40 @@ void TestBom::undoRestoresTheOriginalBytes()
 	const QHash<QString, QByteArray> after = contents(sheetFiles(m_folder));
 	for (auto it = before.constBegin(); it != before.constEnd(); ++it)
 		QCOMPARE(after.value(it.key()), it.value());
+}
+
+void TestBom::closeClearsProject()
+{
+	if (QStandardPaths::findExecutable(QStringLiteral("kicad-cli")).isEmpty())
+		QSKIP("kicad-cli is not installed");
+	if (!copyProject())
+		QSKIP("the integration test fixture is missing");
+
+	Project project(m_prefs.get());
+	QVERIFY(project.openPath(m_root));
+	QVERIFY(waitUntilIdle(project));
+	project.rows()->setShowAssigned(true);
+	project.selectRow(0);
+	QVERIFY(project.hasTarget());
+
+	const QVariantMap line = project.rows()->rowAt(0);
+	const QStringList refs = line.value(QStringLiteral("refs")).toStringList();
+	QVERIFY(!refs.isEmpty());
+
+	project.assign(QStringLiteral("TEST0000-ND"));
+	QCOMPARE(project.pendingCount(), refs.size());
+	QCOMPARE(m_prefs->lastProject(), m_root);
+	QVERIFY(project.recent().contains(m_root));
+
+	project.close();
+
+	QVERIFY(!project.isOpen());
+	QCOMPARE(project.rows()->count(), 0);
+	QCOMPARE(project.pendingCount(), 0);
+	QVERIFY(!project.hasTarget());
+	QVERIFY(!project.canUndo());
+	QVERIFY(m_prefs->lastProject().isEmpty());
+	QVERIFY(project.recent().contains(m_root));
 }
 
 QTEST_MAIN(TestBom)

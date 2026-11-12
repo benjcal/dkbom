@@ -61,7 +61,7 @@ Rectangle {
 	function fold(textValue) {
 		return String(textValue).toLowerCase()
 			.replace(/\u00b5/g, "u")
-			.replace(/[^a-z0-9.]/g, "");
+			.replace(/[^a-z0-9.\/%]/g, "");
 	}
 
 	function setQuery(parameterId, text) {

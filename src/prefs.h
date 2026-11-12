@@ -41,6 +41,7 @@ public:
 	 * opens. */
 	QStringList recentProjects() const;
 	QString lastProject() const;
+	Q_INVOKABLE void clearLastProject();
 
 	/* Digi-Key credentials belong to the user and are pasted into the settings
 	 * dialog, then kept here. QSettings is plain text, which is a bench tool's

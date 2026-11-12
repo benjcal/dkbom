@@ -57,6 +57,7 @@ public:
 	 * which is how somebody who picked the folder in a dialog expects it. */
 	Q_INVOKABLE void open(const QUrl &url);
 	Q_INVOKABLE bool openPath(const QString &path);
+	Q_INVOKABLE void close();
 	Q_INVOKABLE void reload();
 	Q_INVOKABLE void selectRow(int index);
 	Q_INVOKABLE void clearTarget();

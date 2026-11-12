@@ -54,6 +54,7 @@ public:
 
 	/* One entry per BOM line, {dkpn, qty, dnp}; everything else is fetched. */
 	Q_INVOKABLE void setLines(const QVariantList &lines);
+	Q_INVOKABLE void clear();
 
 	int assemblies() const { return m_assemblies; }
 	void setAssemblies(int assemblies);
@@ -92,6 +93,7 @@ private:
 	QHash<QString, bool> m_requested;
 	QStringList m_pending;
 	bool m_inFlight = false;
+	int m_generation = 0;
 
 	QVector<Line> m_lines;
 	int m_assemblies = 1;

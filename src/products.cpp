@@ -78,6 +78,11 @@ void Products::setAssemblies(int assemblies)
 
 void Products::setLines(const QVariantList &lines)
 {
+	if (lines.isEmpty()) {
+		clear();
+		return;
+	}
+
 	QVector<Line> next;
 	next.reserve(lines.size());
 
@@ -96,6 +101,18 @@ void Products::setLines(const QVariantList &lines)
 	m_lines = next;
 	refreshTotals();
 	fetchNext();
+}
+
+void Products::clear()
+{
+	++m_generation;
+	m_pending.clear();
+	m_requested.clear();
+	m_lines.clear();
+	setStatus(QString());
+	refreshTotals();
+	emit detailsChanged();
+	emit loadingChanged();
 }
 
 void Products::enqueue(const QString &dkpn)
@@ -123,9 +140,17 @@ void Products::fetchNext()
 	const QString path = QLatin1String(kProductPath)
 			     + QString::fromLatin1(QUrl::toPercentEncoding(dkpn))
 			     + QLatin1String(kProductSuffix);
+	const int generation = m_generation;
 
 	m_api->get(path,
-		   [this, dkpn](const QJsonObject &root, const QString &error) {
+		   [this, dkpn, generation](const QJsonObject &root, const QString &error) {
+			   if (generation != m_generation) {
+				   m_inFlight = false;
+				   emit loadingChanged();
+				   fetchNext();
+				   return;
+			   }
+
 			   m_inFlight = false;
 
 			   if (!error.isEmpty()) {
@@ -142,7 +167,14 @@ void Products::fetchNext()
 			   emit loadingChanged();
 			   fetchNext();
 		   },
-		   [this, dkpn](const QString &problem) {
+		   [this, dkpn, generation](const QString &problem) {
+			   if (generation != m_generation) {
+				   m_inFlight = false;
+				   emit loadingChanged();
+				   fetchNext();
+				   return;
+			   }
+
 			   m_inFlight = false;
 			   m_requested.remove(dkpn);
 			   setStatus(tr("pricing %1: %2").arg(dkpn, problem));

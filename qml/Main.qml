@@ -194,7 +194,7 @@ ApplicationWindow {
 			ToolButton {
 				id: columnsButton
 				text: "Columns"
-				icon.source: "qrc:/assets/icons/columns.svg"
+				icon.source: "qrc:/assets/icons/table.svg"
 				icon.color: Format.text
 				display: AbstractButton.TextBesideIcon
 				onClicked: columnsPopup.open()

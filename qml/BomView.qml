@@ -82,6 +82,22 @@ Rectangle {
 		onAccepted: Project.open(selectedFile)
 	}
 
+	Dialog {
+		id: closeProjectDialog
+		title: "Close project?"
+		modal: true
+		anchors.centerIn: parent
+		standardButtons: Dialog.Cancel | Dialog.Discard
+		onDiscarded: Project.close()
+
+		Label {
+			text: Project.pendingCount + " unsaved assignment"
+			      + (Project.pendingCount === 1 ? "" : "s")
+			      + " will be dropped."
+			wrapMode: Text.WordWrap
+		}
+	}
+
 	ColumnLayout {
 		anchors.fill: parent
 		spacing: 0
@@ -130,9 +146,24 @@ Rectangle {
 					Button {
 						icon.source: "qrc:/assets/icons/arrow-clockwise.svg"
 						icon.color: Format.text
-						enabled: Project.isOpen && !Project.busy
+						visible: Project.isOpen
+						enabled: !Project.busy
 						onClicked: Project.reload()
 						ToolTip.text: "Reload"
+						ToolTip.visible: hovered
+					}
+
+					ToolButton {
+						icon.source: "qrc:/assets/icons/x.svg"
+						icon.color: Format.text
+						visible: Project.isOpen
+						onClicked: {
+							if (Project.pendingCount > 0)
+								closeProjectDialog.open();
+							else
+								Project.close();
+						}
+						ToolTip.text: "Close project"
 						ToolTip.visible: hovered
 					}
 				}
@@ -329,13 +360,28 @@ Rectangle {
 				onClicked: projectDialog.open()
 			}
 
-			Label {
+			RowLayout {
 				Layout.fillWidth: true
 				Layout.topMargin: 6
-				text: "Recent"
-				font.pixelSize: 11
-				color: Format.muted
 				visible: Project.recent.length > 0
+				spacing: 4
+
+				Label {
+					Layout.fillWidth: true
+					text: "Recent"
+					font.pixelSize: 11
+					color: Format.muted
+				}
+
+				Button {
+					flat: true
+					font.pixelSize: 10
+					text: "clear"
+					padding: 2
+					onClicked: Project.forgetRecent()
+					ToolTip.text: "Forget recent projects"
+					ToolTip.visible: hovered
+				}
 			}
 
 			Repeater {

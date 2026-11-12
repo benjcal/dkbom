@@ -111,6 +111,45 @@ bool Project::openPath(const QString &path)
 	return true;
 }
 
+void Project::close()
+{
+	if (!isOpen())
+		return;
+
+	if (m_process) {
+		QProcess *stale = m_process;
+		m_process = nullptr;
+		disconnect(stale, nullptr, this, nullptr);
+		stale->kill();
+		stale->deleteLater();
+	}
+
+	m_root.clear();
+	m_folder.clear();
+	m_sheets.clear();
+	m_sites.clear();
+	m_uuidOf.clear();
+	m_refOf.clear();
+	m_undo.clear();
+	m_pending.clear();
+	m_expect.clear();
+	m_locked = false;
+	m_busy = false;
+
+	m_rows->setRows({});
+	m_rows->setStaged({});
+	clearTarget();
+
+	m_prefs->clearLastProject();
+
+	setStatus(m_tool.isEmpty()
+			  ? tr("kicad-cli not found; set KICAD_CLI to its path")
+			  : tr("Open a KiCad project"));
+	emit changed();
+	emit pendingChanged();
+	emit undoChanged();
+}
+
 /* The root sheet names its children by file; the children can name more. */
 QStringList Project::collectSheets(const QString &root) const
 {

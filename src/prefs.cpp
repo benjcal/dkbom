@@ -116,6 +116,16 @@ QString Prefs::lastProject() const
 	return m_settings.value(QStringLiteral("project/last")).toString();
 }
 
+void Prefs::clearLastProject()
+{
+	if (!m_settings.contains(QStringLiteral("project/last")))
+		return;
+
+	m_settings.remove(QStringLiteral("project/last"));
+	m_settings.sync();
+	emit recentChanged();
+}
+
 void Prefs::addRecentProject(const QString &path)
 {
 	QStringList paths = recentProjects();

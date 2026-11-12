@@ -1,5 +1,6 @@
 BUILD := build
-PREFIX ?= $(HOME)/.local
+# PREFIX ?= $(HOME)/.local
+PREFIX ?= /usr/local
 
 BUILD_TYPE ?= Release
 CMAKE_FLAGS ?= -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
@@ -11,7 +12,7 @@ build:
 run: build
 	@set -a; [ ! -f .env ] || . ./.env; set +a; ./$(BUILD)/dkbom
 
-install: build
+install:
 	cmake --install $(BUILD) --prefix $(PREFIX)
 
 uninstall:
